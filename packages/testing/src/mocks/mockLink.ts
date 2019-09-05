@@ -59,10 +59,10 @@ export class MockLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> | null {
     const key = requestToKey(operation, this.addTypename);
+    const requestVariables = operation.variables || {};
     let responseIndex;
     const response = (this.mockedResponsesByKey[key] || []).find(
       (res, index) => {
-        const requestVariables = operation.variables || {};
         const mockedResponseVariables = res.request.variables || {};
         if (
           !isEqual(
@@ -109,7 +109,7 @@ export class MockLink extends ApolloLink {
             if (result) {
               observer.next(
                 typeof result === 'function'
-                  ? (result as ResultFunction<FetchResult>)()
+                  ? (result as ResultFunction<FetchResult>)(requestVariables)
                   : result
               );
             }
